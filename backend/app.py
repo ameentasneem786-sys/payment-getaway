@@ -572,31 +572,52 @@ def change_password():
     return jsonify({"message": "Password changed successfully"}), 200
 
 
-@app.route("/send-money", methods=["POST"])
+# @app.route("/send-money", methods=["POST"])
+# def send_money():
+#     if not ensure_db():
+#         return json_error("Database connection failed", 500)
+
+#     data = request.get_json(silent=True) or {}
+#     mobile = data.get("mobile", "").strip()
+#     amount, error = parse_amount(data.get("amount"), 100000)
+
+#     if error:
+#         return error
+
+#     if not mobile or not mobile.isdigit() or len(mobile) != 10:
+#         return json_error("Mobile number must be 10 digits", 400)
+
+#     user, auth_error = get_current_user(required=False)
+
+#     if auth_error:
+#         return auth_error
+
+#     payment_method, method_error = parse_payment_method(
+#         data.get("payment_method"),
+#         default_method="wallet",
+#     )
+
+
+    @app.route("/send-money", methods=["POST"])
 def send_money():
-    if not ensure_db():
-        return json_error("Database connection failed", 500)
+    ensure_db()
 
-        data = request.get_json(silent=True) or {}
+    # 🔥 ye line missing thi
+    data = request.get_json(silent=True) or {}
+
     mobile = data.get("mobile", "").strip()
-    amount, error = parse_amount(data.get("amount"), 100000)
+    amount = float(data.get("amount", 0))
 
-    if error:
-        return error
+    if not mobile or len(mobile) != 10:
+        return jsonify({"error": "Invalid mobile"}), 400
 
-    if not mobile or not mobile.isdigit() or len(mobile) != 10:
-        return json_error("Mobile number must be 10 digits", 400)
-
-    user, auth_error = get_current_user(required=False)
-
-    if auth_error:
-        return auth_error
-
-    payment_method, method_error = parse_payment_method(
-        data.get("payment_method"),
-        default_method="wallet",
+    cursor.execute(
+        "INSERT INTO transactions (mobile, amount) VALUES (%s, %s)",
+        (mobile, amount)
     )
+    db.commit()
 
+    return jsonify({"message": "Payment Success"}), 201
     if method_error:
         return method_error
 

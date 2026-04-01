@@ -1110,31 +1110,33 @@ def recharge():
 # ✅ ADD MONEY
 @app.route("/add-money", methods=["POST"])
 def add_money():
-    if not ensure_db():
-        return jsonify({"error": "DB error"}), 500
-
-    data = request.get_json(silent=True) or {}
-
     try:
-        amount = float(data.get("amount", 0))
-    except:
-        return jsonify({"error": "Invalid amount"}), 400
+        if not ensure_db():
+            return jsonify({"error": "DB error"}), 500
 
-    if amount <= 0:
-        return jsonify({"error": "Amount must be greater than 0"}), 400
+        # ✅ FIX 1: data define
+        data = request.get_json(silent=True) or {}
 
-    try:
+        try:
+            amount = float(data.get("amount", 0))
+        except:
+            return jsonify({"error": "Invalid amount"}), 400
+
+        if amount <= 0:
+            return jsonify({"error": "Amount must be greater than 0"}), 400
+
+        # ✅ FIX 2: user use nahi karna (no login mode)
         cursor.execute(
             "INSERT INTO add_money (amount) VALUES (%s)",
             (amount,)
         )
         db.commit()
+
+        return jsonify({"message": "Money Added Successfully"}), 200
+
     except Exception as e:
-        print("DB ERROR:", e)
-        return jsonify({"error": "Database error"}), 500
-
-    return jsonify({"message": "Money Added Successfully"}), 200
-
+        print("🔥 ERROR:", e)
+        return jsonify({"error": str(e)}), 500
 
 # ✅ TRANSACTIONS
 @app.route("/transactions", methods=["GET"])

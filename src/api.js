@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = location.host === 'localhost' ?
-  "http://127.0.0.1:5000" : 'https://payment-getway-app.onrender.com'
+  "http://127.0.0.1:5000" : 'https://payment-getaway-0oi0.onrender.com'
 
 const API = axios.create({
   baseURL: API_BASE_URL,

@@ -46,14 +46,23 @@ def build_allowed_origins():
 CORS(app, origins="*")
 
 
+# def get_db_config():
+#     return {
+#         "host": os.getenv("DB_HOST", "localhost"),
+#         "user": os.getenv("DB_USER", "root"),
+#         "password": os.getenv("DB_PASSWORD", ""),
+#         "database": os.getenv("DB_NAME", "payment-getaway"),
+#     }
+
 def get_db_config():
     return {
-        "host": os.getenv("DB_HOST", "localhost"),
-        "user": os.getenv("DB_USER", "root"),
-        "password": os.getenv("DB_PASSWORD", ""),
-        "database": os.getenv("DB_NAME", "payment-getaway"),
+        "host": os.getenv("DB_HOST"),
+        "user": os.getenv("DB_USER"),
+        "password": os.getenv("DB_PASSWORD"),
+        "database": os.getenv("DB_NAME"),
+        "port": 4000,
+        "ssl_disabled": False
     }
-
 
 def column_exists(table_name, column_name):
     cursor.execute(

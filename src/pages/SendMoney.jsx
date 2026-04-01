@@ -167,7 +167,10 @@ function SendMoney() {
             <p style={{ color: "#999", fontSize: "0.9rem" }}>
               Your transaction has been completed successfully.
             </p>
-            <button onClick={() => setPopup(false)} style={{ marginTop: "20px" }}>
+            <button
+              onClick={() => setPopup(false)}
+              style={{ marginTop: "20px" }}
+            >
               Done
             </button>
           </div>

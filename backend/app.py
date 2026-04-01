@@ -51,7 +51,7 @@ def get_db_config():
         "host": os.getenv("DB_HOST", "localhost"),
         "user": os.getenv("DB_USER", "root"),
         "password": os.getenv("DB_PASSWORD", ""),
-        "database": os.getenv("DB_NAME", "payment_system"),
+        "database": os.getenv("DB_NAME", "payment-getaway"),
     }
 
 

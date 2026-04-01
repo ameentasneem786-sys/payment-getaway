@@ -1114,8 +1114,9 @@ def add_money():
         if not ensure_db():
             return jsonify({"error": "DB error"}), 500
 
-        # ✅ FIX 1: data define
         data = request.get_json(silent=True) or {}
+
+        print("DATA:", data)  # debug
 
         try:
             amount = float(data.get("amount", 0))
@@ -1124,6 +1125,18 @@ def add_money():
 
         if amount <= 0:
             return jsonify({"error": "Amount must be greater than 0"}), 400
+
+        cursor.execute(
+            "INSERT INTO add_money (amount) VALUES (%s)",
+            (amount,)
+        )
+        db.commit()
+
+        return jsonify({"message": "Money Added Successfully"}), 200
+
+    except Exception as e:
+        print("🔥 ADD MONEY ERROR:", e)
+        return jsonify({"error": str(e)}), 500
 
         # ✅ FIX 2: user use nahi karna (no login mode)
         cursor.execute(

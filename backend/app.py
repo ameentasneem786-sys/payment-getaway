@@ -1042,35 +1042,35 @@ def health():
 # ✅ SEND MONEY
 @app.route("/send-money", methods=["POST"])
 def send_money():
-    if not ensure_db():
-        return jsonify({"error": "DB error"}), 500
-
-    data = request.get_json(silent=True) or {}
-
-    mobile = data.get("mobile", "").strip()
-
     try:
+        print("API HIT ✅")
+
+        if not ensure_db():
+            return jsonify({"error": "DB error"}), 500
+
+        data = request.get_json(silent=True)
+        print("DATA:", data)
+
+        if not data:
+            return jsonify({"error": "No data received"}), 400
+
+        mobile = str(data.get("mobile", "")).strip()
         amount = float(data.get("amount", 0))
-    except:
-        return jsonify({"error": "Invalid amount"}), 400
 
-    if not mobile or not mobile.isdigit() or len(mobile) != 10:
-        return jsonify({"error": "Invalid mobile number"}), 400
+        print("MOBILE:", mobile)
+        print("AMOUNT:", amount)
 
-    if amount <= 0:
-        return jsonify({"error": "Amount must be greater than 0"}), 400
-
-    try:
         cursor.execute(
             "INSERT INTO transactions (mobile, amount) VALUES (%s, %s)",
             (mobile, amount)
         )
         db.commit()
-    except Exception as e:
-        print("DB ERROR:", e)
-        return jsonify({"error": "Database error"}), 500
 
-    return jsonify({"message": "Payment Successful"}), 201
+        return jsonify({"message": "Success"}), 201
+
+    except Exception as e:
+        print("🔥 FULL ERROR:", e)
+        return jsonify({"error": str(e)}), 500
 
 
 # ✅ RECHARGE

@@ -855,11 +855,6 @@ def add_money():
     if not ensure_db():
         return json_error("Database connection failed", 500)
 
-    user, error = get_current_user(required=True)
-
-    if error:
-        return error
-
     data = request.get_json(silent=True) or {}
     amount, parse_error = parse_amount(data.get("amount"), 100000)
 
@@ -874,30 +869,21 @@ def add_money():
     if method_error:
         return method_error
 
-    cursor.execute(
-        "UPDATE users SET balance = balance + %s WHERE id = %s",
-        (amount, user[0]),
-    )
+    # 👉 user_id = NULL (no login)
     cursor.execute(
         """
         INSERT INTO add_money (user_id, amount, status, payment_method)
         VALUES (%s, %s, %s, %s)
         """,
-        (user[0], amount, "Success", payment_method),
+        (None, amount, "Success", payment_method),
     )
+
     db.commit()
 
-    updated_user = fetch_user(user[0])
-
-    return (
-        jsonify(
-            {
-                "message": "Money added successfully",
-                "user": serialize_user(updated_user),
-                "payment_method": format_payment_method(payment_method),
-            }
-        ),
-        200,
+    return jsonify({
+        "message": "Money added successfully",
+        "payment_method": format_payment_method(payment_method),
+    }), 200
     )
 
 

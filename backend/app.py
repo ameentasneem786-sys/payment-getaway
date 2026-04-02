@@ -956,10 +956,17 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 load_dotenv()
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 app = Flask(__name__)
-CORS(app, origins="*")
-
+# CORS(app, origins="*")
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+    return response
+    
 # ✅ DB CONFIG (TiDB)
 def get_db_config():
     return {
@@ -1116,8 +1123,6 @@ def add_money():
 
         data = request.get_json(silent=True) or {}
 
-        print("DATA:", data)  # debug
-
         try:
             amount = float(data.get("amount", 0))
         except:
@@ -1137,7 +1142,7 @@ def add_money():
     except Exception as e:
         print("🔥 ADD MONEY ERROR:", e)
         return jsonify({"error": str(e)}), 500
-
+        
         # ✅ FIX 2: user use nahi karna (no login mode)
         cursor.execute(
             "INSERT INTO add_money (amount) VALUES (%s)",

@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__)  # 🔥 FIRST
 
-# ✅ CORS FIX
+# ✅ THEN CORS
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.after_request
